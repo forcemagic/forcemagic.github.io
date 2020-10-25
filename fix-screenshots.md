@@ -16,7 +16,7 @@
 
 3. Open the folder and double-click the **Fix Screenshots** file
 
-4. Connect your phone and wait for the magic to happen!! (ﾉ◕ヮ◕)ﾉ*:･ﾟ✧
+4. Connect your phone, tap *Allow* on it, and wait for the magic to happen!! (ﾉ◕ヮ◕)ﾉ*:･ﾟ✧
 
 Yours Truly,  
 &copy; Matthew Coal
