@@ -1,0 +1,21 @@
+# Fix Screenshots in the Ghost app :D
+
+> Note: This only works on Windows. If you're running something else, you should figure the steps out yourself :P
+
+## You will need:
+- An Android phone (yes, it only works on those)
+- A USB cable
+- A laptop/PC
+
+## Steps:
+
+1. Download [this](./FixScreenshots.zip) file.
+
+2. Right click > Extract all
+
+3. Open the folder and double-click the **Fix Screenshots** file
+
+4. Connect your phone and wait for the magic to happen!! (ﾉ◕ヮ◕)ﾉ*:･ﾟ✧
+
+Yours Truly,  
+&copy; Matthew Coal
