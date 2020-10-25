@@ -11,7 +11,8 @@
 
 1. Download [this](./FixScreenshots.zip) file.
 
-2. Right click > Extract all
+2. Right click > Extract all  
+  From a browser, click on *Open containing folder*, then do the above.
 
 3. Open the folder and double-click the **Fix Screenshots** file
 
