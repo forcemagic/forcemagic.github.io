@@ -9,6 +9,9 @@
 
 ## Steps:
 
+1. Enable *USB Debugging* on your device. [This](https://developer.android.com/studio/debug/dev-options#enable) site can show you how (official).  
+   Also, maybe [this video](https://m.youtube.com/watch?v=Ucs34BkfPB0) could help.
+
 1. Download [this](./FixScreenshots.zip) file.
 
 2. Right click > Extract all  
