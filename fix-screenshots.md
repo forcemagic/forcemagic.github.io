@@ -21,5 +21,7 @@
 
 4. Connect your phone, tap *Allow* on it, and wait for the magic to happen!! (ﾉ◕ヮ◕)ﾉ*:･ﾟ✧
 
+PS. Disable Developer options when you're done!
+
 Yours Truly,  
 &copy; Matthew Coal
