@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenHeimer | Now I am become computation</title>
+    <style>
+        :root {
+            --dark: #0a0a0a;
+            --light: #f5f5f5;
+            --accent: #ff3a00;
+            --secondary: #2a6496;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        
+        body {
+            background-color: var(--dark);
+            color: var(--light);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.9)), url('/api/placeholder/1200/800') center/cover no-repeat;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, rgba(255, 58, 0, 0.2) 0%, transparent 70%);
+            z-index: 1;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+        }
+        
+        .logo {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            letter-spacing: -2px;
+        }
+        
+        .tagline {
+            font-size: 1.5rem;
+            max-width: 700px;
+            margin: 0 auto 2rem;
+            opacity: 0.9;
+        }
+        
+        .hero-quote {
+            font-style: italic;
+            font-size: 1.2rem;
+            margin-bottom: 3rem;
+            opacity: 0.7;
+        }
+        
+        .cta-btn {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background-color: var(--accent);
+            color: var(--light);
+            text-decoration: none;
+            font-weight: 600;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            margin-right: 1rem;
+        }
+        
+        .cta-btn:hover {
+            background-color: #ff5a30;
+            transform: translateY(-2px);
+        }
+        
+        .secondary-btn {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background-color: transparent;
+            color: var(--light);
+            text-decoration: none;
+            font-weight: 600;
+            border: 1px solid var(--light);
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+        
+        .secondary-btn:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        /* Features Section */
+        .features {
+            padding: 6rem 0;
+            background-color: #111111;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 4rem;
+            position: relative;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 4px;
+            background-color: var(--accent);
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 3rem;
+        }
+        
+        .feature-card {
+            background-color: rgba(255, 255, 255, 0.05);
+            padding: 2rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .feature-title {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--accent);
+        }
+        
+        .feature-description {
+            opacity: 0.8;
+        }
+        
+        /* Timeline Section */
+        .timeline {
+            padding: 6rem 0;
+            background-color: var(--dark);
+        }
+        
+        .timeline-container {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        .timeline-container::after {
+            content: '';
+            position: absolute;
+            width: 6px;
+            background-color: var(--accent);
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            margin-left: -3px;
+        }
+        
+        .timeline-item {
+            padding: 10px 40px;
+            position: relative;
+            width: 50%;
+            box-sizing: border-box;
+        }
+        
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            width: 25px;
+            height: 25px;
+            background-color: var(--light);
+            border: 4px solid var(--accent);
+            top: 15px;
+            border-radius: 50%;
+            z-index: 1;
+        }
+        
+        .timeline-left {
+            left: 0;
+        }
+        
+        .timeline-right {
+            left: 50%;
+        }
+        
+        .timeline-left::after {
+            right: -17px;
+        }
+        
+        .timeline-right::after {
+            left: -17px;
+        }
+        
+        .timeline-content {
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+        }
+        
+        .timeline-date {
+            color: var(--accent);
+            font-weight: bold;
+        }
+        
+        /* Countdown Section */
+        .countdown {
+            padding: 6rem 0;
+            text-align: center;
+            background-color: #111111;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .countdown::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, rgba(255, 58, 0, 0.1) 0%, transparent 70%);
+            z-index: 1;
+        }
+        
+        .countdown-content {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .countdown-timer {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+        
+        .countdown-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .countdown-number {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+        
+        .countdown-label {
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.7;
+        }
+        
+        /* Ethical Section */
+        .ethical {
+            padding: 6rem 0;
+            background-color: var(--dark);
+            text-align: center;
+        }
+        
+        .ethical-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 3rem;
+            margin-top: 3rem;
+        }
+        
+        .ethical-item {
+            background-color: rgba(255, 255, 255, 0.05);
+            padding: 2rem;
+            border-radius: 8px;
+        }
+        
+        .ethical-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--accent);
+        }
+        
+        /* Newsletter Section */
+        .newsletter {
+            padding: 6rem 0;
+            background-color: #111111;
+            text-align: center;
+        }
+        
+        .newsletter-form {
+            max-width: 500px;
+            margin: 3rem auto 0;
+        }
+        
+        .form-group {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .form-input {
+            flex: 1;
+            padding: 1rem;
+            border: none;
+            border-radius: 4px;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--light);
+        }
+        
+        .form-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .submit-btn {
+            padding: 1rem 2rem;
+            background-color: var(--accent);
+            color: var(--light);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .submit-btn:hover {
+            background-color: #ff5a30;
+        }
+        
+        /* Footer */
+        .footer {
+            padding: 3rem 0;
+            text-align: center;
+            opacity: 0.7;
+        }
+        
+        .footer a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+        
+        /* Animations */
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes flash {
+            0% { opacity: 0; }
+            50% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+        
+        .trinity-active {
+            margin: 2rem 0;
+            animation: flash 1s infinite;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .logo {
+                font-size: 2.5rem;
+            }
+            
+            .tagline {
+                font-size: 1.2rem;
+            }
+            
+            .countdown-timer {
+                gap: 1rem;
+            }
+            
+            .countdown-number {
+                font-size: 2rem;
+            }
+            
+            .form-group {
+                flex-direction: column;
+            }
+            
+            .timeline-container::after {
+                left: 31px;
+            }
+            
+            .timeline-item {
+                width: 100%;
+                padding-left: 70px;
+                padding-right: 25px;
+            }
+            
+            .timeline-item::after {
+                left: 15px;
+            }
+            
+            .timeline-right {
+                left: 0%;
+            }
+        }
+    </style>
+    <script>
+        // Countdown functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set the Trinity test date (16 days from now)
+            const now = new Date();
+            const targetDate = new Date(now);
+            targetDate.setDate(now.getDate() + 16);
+            targetDate.setHours(now.getHours() + 7);
+            targetDate.setMinutes(now.getMinutes() + 5);
+            targetDate.setSeconds(now.getSeconds() + 29);
+            
+            // Update the countdown every second
+            const countdown = setInterval(function() {
+                // Get current date and time
+                const currentDate = new Date();
+                
+                // Calculate the difference in milliseconds
+                const diff = targetDate - currentDate;
+                
+                // If the countdown is over, show message and clear interval
+                if (diff <= 0) {
+                    document.getElementById('days').textContent = '00';
+                    document.getElementById('hours').textContent = '00';
+                    document.getElementById('minutes').textContent = '00';
+                    document.getElementById('seconds').textContent = '00';
+                    
+                    // Show "Trinity test in progress" message
+                    const trinityMessage = document.createElement('div');
+                    trinityMessage.className = 'trinity-active';
+                    trinityMessage.innerHTML = '<p style="color: var(--accent); font-size: 1.5rem; font-weight: bold;">TRINITY TEST IN PROGRESS</p>';
+                    document.querySelector('.countdown-timer').after(trinityMessage);
+                    
+                    clearInterval(countdown);
+                    return;
+                }
+                
+                // Calculate days, hours, minutes and seconds
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+                
+                // Display the result
+                document.getElementById('days').textContent = days < 10 ? '0' + days : days;
+                document.getElementById('hours').textContent = hours < 10 ? '0' + hours : hours;
+                document.getElementById('minutes').textContent = minutes < 10 ? '0' + minutes : minutes;
+                document.getElementById('seconds').textContent = seconds < 10 ? '0' + seconds : seconds;
+            }, 1000);
+        });
+    </script>
+</head>
+<body>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container hero-content">
+            <h1 class="logo">Open<span style="color: var(--accent);">Heimer</span></h1>
+            <p class="tagline">The computational equivalent of splitting the atom – a paradigm-shifting open source framework.</p>
+            <p class="hero-quote">"Now I am become computation, the destroyer of problems."</p>
+            <div class="cta-buttons">
+                <a href="#trinity" class="cta-btn">The Trinity Test</a>
+                <a href="#features" class="secondary-btn">Project Manhattan</a>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="container">
+            <h2 class="section-title">Project Manhattan</h2>
+            <p style="text-align: center; margin-bottom: 3rem;">A clandestine collaboration of the greatest computational minds of our generation.</p>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3 class="feature-title">Chain Reaction Architecture</h3>
+                    <p class="feature-description">Our revolutionary computational model triggers cascading solutions that multiply in effectiveness, creating exponential processing power from minimal resources.</p>
+                </div>
+                <div class="feature-card">
+                    <h3 class="feature-title">Critical Mass Computing</h3>
+                    <p class="feature-description">When data density reaches critical thresholds, OpenHeimer initiates spontaneous problem-solving cascades that radically transform computational landscapes.</p>
+                </div>
+                <div class="feature-card">
+                    <h3 class="feature-title">Theoretical Division</h3>
+                    <p class="feature-description">Following in the footsteps of giants, our theoretical division explores computational frontiers to create mathematical foundations for tomorrow's technologies.</p>
+                </div>
+                <div class="feature-card">
+                    <h3 class="feature-title">Computational Proliferation Control</h3>
+                    <p class="feature-description">Built-in governance mechanisms prevent misuse while allowing beneficial deployment—the complex balance between progress and restraint.</p>
+                </div>
+                <div class="feature-card">
+                    <h3 class="feature-title">Los Alamos Distributed System</h3>
+                    <p class="feature-description">Harness the collective intelligence of isolated computational nodes that only reveal their contributions to authorized observers.</p>
+                </div>
+                <div class="feature-card">
+                    <h3 class="feature-title">Security Clearance Protocol</h3>
+                    <p class="feature-description">Multi-layered access controls ensure that computational capabilities are accessible only to those with proper authorization and ethical oversight.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Trinity Test Section -->
+    <section class="countdown" id="trinity">
+        <div class="container countdown-content">
+            <h2 class="section-title">The Trinity Test</h2>
+            <p>Our first controlled demonstration of computational fusion is approaching.</p>
+            <p style="margin-top: 1rem; font-style: italic;">"We knew the world would not be the same."</p>
+            <div class="countdown-timer">
+                <div class="countdown-item">
+                    <span id="days" class="countdown-number">16</span>
+                    <span class="countdown-label">Days</span>
+                </div>
+                <div class="countdown-item">
+                    <span id="hours" class="countdown-number">07</span>
+                    <span class="countdown-label">Hours</span>
+                </div>
+                <div class="countdown-item">
+                    <span id="minutes" class="countdown-number">05</span>
+                    <span class="countdown-label">Minutes</span>
+                </div>
+                <div class="countdown-item">
+                    <span id="seconds" class="countdown-number">29</span>
+                    <span class="countdown-label">Seconds</span>
+                </div>
+            </div>
+            <p class="pulse" style="color: var(--accent); margin-top: 2rem;">Alamogordo Access Code: NM-1945</p>
+            <p style="max-width: 600px; margin: 2rem auto 0; opacity: 0.8;">
+                "Few people laughed, few people cried, most people were silent. There will be those who will fear its destructive power, and there will be those who will hope it is deployed for the benefit of mankind."
+            </p>
+        </div>
+    </section>
+    
+    <!-- Timeline Section -->
+    <section class="timeline">
+        <div class="container">
+            <h2 class="section-title">Project Timeline</h2>
+            <div class="timeline-container">
+                <div class="timeline-item timeline-left">
+                    <div class="timeline-content">
+                        <h3 class="timeline-date">Phase 1: Theoretical Conception</h3>
+                        <p>Initial theories formulated by our chief architect after years of studying computational physics at the most prestigious institutions.</p>
+                    </div>
+                </div>
+                <div class="timeline-item timeline-right">
+                    <div class="timeline-content">
+                        <h3 class="timeline-date">Phase 2: Presidential Approval</h3>
+                        <p>Securing institutional backing and unprecedented resources after demonstrating the technology's transformative potential.</p>
+                    </div>
+                </div>
+                <div class="timeline-item timeline-left">
+                    <div class="timeline-content">
+                        <h3 class="timeline-date">Phase 3: Assembling Brilliance</h3>
+                        <p>Recruiting the finest computational minds from across the globe to collaborate in our secure development facility.</p>
+                    </div>
+                </div>
+                <div class="timeline-item timeline-right">
+                    <div class="timeline-content">
+                        <h3
