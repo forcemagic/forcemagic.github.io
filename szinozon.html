@@ -20,7 +20,7 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #000000 0%, #331100 50%, #000000 100%);
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -30,12 +30,12 @@
         }
 
         .game-container {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.7);
             backdrop-filter: blur(10px);
             border-radius: 20px;
             padding: 30px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(255, 69, 0, 0.3);
+            border: 2px solid rgba(255, 102, 0, 0.4);
             max-width: 660px;
             width: 100%;
         }
@@ -88,11 +88,18 @@
         }
 
         .score-item {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.5);
             padding: 10px 20px;
             border-radius: 10px;
             backdrop-filter: blur(5px);
             white-space: nowrap;
+            border: 1px solid rgba(255, 102, 0, 0.3);
+            color: #ffffff;
+        }
+
+        .score-item span {
+            color: #ff6600;
+            font-weight: bold;
         }
 
         @media (max-width: 400px) {
@@ -105,9 +112,9 @@
             position: relative;
             width: 100%;
             padding-bottom: 66.67%; /* 400/600 = 0.6667 to maintain aspect ratio */
-            background: #f0f0f5;
+            background: #000000;
             border-radius: 10px;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 16px rgba(255, 69, 0, 0.4);
         }
 
         #gameCanvas {
@@ -134,14 +141,16 @@
         }
 
         .modal-content {
-            background: rgba(255, 255, 255, 0.95);
-            color: #333;
+            background: linear-gradient(135deg, #1a0600 0%, #330c00 50%, #1a0600 100%);
+            color: #ffffff;
             padding: 40px;
             border-radius: 20px;
             text-align: center;
             max-width: 400px;
             width: 90%;
             margin: 20px;
+            border: 2px solid rgba(255, 102, 0, 0.4);
+            box-shadow: 0 8px 32px rgba(255, 69, 0, 0.3);
         }
 
         @media (max-width: 500px) {
@@ -153,7 +162,7 @@
         .modal-content h2 {
             font-size: 2em;
             margin-bottom: 20px;
-            color: #764ba2;
+            color: #ff6600;
         }
 
         .modal-content p {
@@ -162,7 +171,7 @@
         }
 
         .play-again-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #ff4500 0%, #ff6600 100%);
             color: white;
             border: none;
             padding: 15px 30px;
@@ -278,13 +287,15 @@
             }
 
             generateSquares() {
-                const hue = Math.random() * 360;
-                const baseSaturation = 80 + Math.random() * 20;
-                const baseLightness = 40 + Math.random() * 20;
+                // Use warm colors (reds, oranges, yellows) for better visibility on black background
+                const warmHues = [0, 15, 30, 45, 60]; // Red to yellow range
+                const hue = warmHues[Math.floor(Math.random() * warmHues.length)];
+                const baseSaturation = 85 + Math.random() * 15; // Higher saturation for better visibility
+                const baseLightness = 50 + Math.random() * 25; // Brighter colors for black background
 
-                // Minimum difference thresholds
-                const MIN_SATURATION_DIFF = 5;
-                const MIN_LIGHTNESS_DIFF = 5;
+                // Minimum difference thresholds - adjusted for warm colors
+                const MIN_SATURATION_DIFF = 8;
+                const MIN_LIGHTNESS_DIFF = 8;
 
                 // Generate different square color with minimum difference
                 let diffSaturation, diffLightness;
@@ -292,18 +303,18 @@
                 const maxAttempts = 100;
 
                 do {
-                    diffSaturation = 80 + Math.random() * 20;
-                    diffLightness = 40 + Math.random() * 20;
+                    diffSaturation = 85 + Math.random() * 15;
+                    diffLightness = 50 + Math.random() * 25;
                     attempts++;
 
                     // Force a minimum difference if we've tried too many times
                     if (attempts >= maxAttempts) {
                         if (Math.random() > 0.5) {
                             diffSaturation = baseSaturation + (Math.random() > 0.5 ? MIN_SATURATION_DIFF : -MIN_SATURATION_DIFF);
-                            diffSaturation = Math.max(80, Math.min(100, diffSaturation));
+                            diffSaturation = Math.max(85, Math.min(100, diffSaturation));
                         } else {
                             diffLightness = baseLightness + (Math.random() > 0.5 ? MIN_LIGHTNESS_DIFF : -MIN_LIGHTNESS_DIFF);
-                            diffLightness = Math.max(40, Math.min(60, diffLightness));
+                            diffLightness = Math.max(50, Math.min(75, diffLightness));
                         }
                         break;
                     }
@@ -437,7 +448,7 @@
 
             draw() {
                 // Clear canvas
-                this.ctx.fillStyle = '#f0f0f5';
+                this.ctx.fillStyle = '#000000';
                 this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
                 // Draw squares
@@ -466,13 +477,13 @@
                         const pulseIntensity = square.pulseTime / 30;
                         this.ctx.globalAlpha = 0.7 + pulseIntensity * 0.3;
                         this.ctx.shadowBlur = 20 * pulseIntensity;
-                        this.ctx.shadowColor = 'rgba(255, 255, 255, 0.8)';
+                        this.ctx.shadowColor = 'rgba(255, 102, 0, 0.8)';
                     }
 
                     // Apply correct square highlight when game over
                     if (this.showingCorrect && i === this.correctIndex) {
                         const flash = Math.sin(this.animationFrame * 0.15) * 0.5 + 0.5;
-                        this.ctx.strokeStyle = `rgba(255, 50, 50, ${flash})`;
+                        this.ctx.strokeStyle = `rgba(255, 102, 0, ${flash})`;
                         this.ctx.lineWidth = 4;
                         this.ctx.strokeRect(
                             square.x + offset - 2, 
