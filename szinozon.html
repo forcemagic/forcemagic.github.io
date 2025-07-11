@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Négyzetes Színes Játék</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            padding: 20px;
+        }
+
+        .game-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            max-width: 660px;
+            width: 100%;
+        }
+
+        @media (max-width: 700px) {
+            .game-container {
+                padding: 20px;
+            }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        @media (max-width: 500px) {
+            .header p {
+                font-size: 1em;
+            }
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        @media (max-width: 500px) {
+            h1 {
+                font-size: 2em;
+            }
+        }
+
+        .score-container {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+            font-size: 1.2em;
+        }
+
+        @media (max-width: 500px) {
+            .score-container {
+                font-size: 1em;
+            }
+        }
+
+        .score-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 20px;
+            border-radius: 10px;
+            backdrop-filter: blur(5px);
+            white-space: nowrap;
+        }
+
+        @media (max-width: 400px) {
+            .score-item {
+                padding: 8px 15px;
+            }
+        }
+
+        .canvas-wrapper {
+            position: relative;
+            width: 100%;
+            padding-bottom: 66.67%; /* 400/600 = 0.6667 to maintain aspect ratio */
+            background: #f0f0f5;
+            border-radius: 10px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        #gameCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+            border-radius: 10px;
+        }
+
+        .game-over-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: rgba(255, 255, 255, 0.95);
+            color: #333;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            margin: 20px;
+        }
+
+        @media (max-width: 500px) {
+            .modal-content {
+                padding: 30px 20px;
+            }
+        }
+
+        .modal-content h2 {
+            font-size: 2em;
+            margin-bottom: 20px;
+            color: #764ba2;
+        }
+
+        .modal-content p {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+
+        .play-again-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.1em;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: transform 0.2s;
+        }
+
+        .play-again-btn:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="header">
+            <h1>Négyzetes színes játék</h1>
+            <p>Találd meg a különböző színű négyzetet!</p>
+        </div>
+        <div class="score-container">
+            <div class="score-item">Pontjaid: <span id="score">0</span></div>
+            <div class="score-item">High Score: <span id="highScore">0</span></div>
+        </div>
+        <div class="canvas-wrapper">
+            <canvas id="gameCanvas" width="600" height="400"></canvas>
+        </div>
+    </div>
+
+    <div class="game-over-modal" id="gameOverModal">
+        <div class="modal-content">
+            <h2>Játék Vége! 😔</h2>
+            <p>Pontszámod: <span id="finalScore">0</span></p>
+            <p>High Score: <span id="modalHighScore">0</span></p>
+            <button class="play-again-btn" onclick="game.restart()">Na mégegyszer!</button>
+        </div>
+    </div>
+
+    <script>
+        class ColorSquareGame {
+            constructor(canvas) {
+                this.canvas = canvas;
+                this.ctx = canvas.getContext('2d');
+                
+                this.score = 0;
+                this.highScore = 0;
+                this.loadHighScore();
+                
+                this.squares = [];
+                this.correctIndex = -1;
+                this.gameOver = false;
+                this.animationFrame = 0;
+                this.showingCorrect = false;
+                this.correctFlashTime = 0;
+
+                this.init();
+            }
+
+            loadHighScore() {
+                try {
+                    const stored = localStorage.getItem('colorSquareHighScore');
+                    this.highScore = stored ? parseInt(stored) : 0;
+                } catch (e) {
+                    console.log('localStorage not available, using 0 as high score');
+                }
+            }
+
+            saveHighScore() {
+                try {
+                    localStorage.setItem('colorSquareHighScore', this.highScore.toString());
+                } catch (e) {
+                    console.log('Could not save high score to localStorage');
+                }
+            }
+
+            init() {
+                this.updateScoreDisplay();
+                this.generateSquares();
+                this.animate();
+                
+                // Add both click and touch support
+                this.canvas.addEventListener('click', (e) => this.handleClick(e));
+                this.canvas.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    const touch = e.touches[0];
+                    this.handleClick(touch);
+                });
+            }
+
+            hslToRgb(h, s, l) {
+                s /= 100;
+                l /= 100;
+
+                const c = (1 - Math.abs(2 * l - 1)) * s;
+                const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
+                const m = l - c / 2;
+
+                let r, g, b;
+
+                if (h < 60) { r = c; g = x; b = 0; }
+                else if (h < 120) { r = x; g = c; b = 0; }
+                else if (h < 180) { r = 0; g = c; b = x; }
+                else if (h < 240) { r = 0; g = x; b = c; }
+                else if (h < 300) { r = x; g = 0; b = c; }
+                else { r = c; g = 0; b = x; }
+
+                r = Math.round((r + m) * 255);
+                g = Math.round((g + m) * 255);
+                b = Math.round((b + m) * 255);
+
+                return `rgb(${r}, ${g}, ${b})`;
+            }
+
+            generateSquares() {
+                const hue = Math.random() * 360;
+                const baseSaturation = 80 + Math.random() * 20;
+                const baseLightness = 40 + Math.random() * 20;
+
+                // Minimum difference thresholds
+                const MIN_SATURATION_DIFF = 5;
+                const MIN_LIGHTNESS_DIFF = 5;
+
+                // Generate different square color with minimum difference
+                let diffSaturation, diffLightness;
+                let attempts = 0;
+                const maxAttempts = 100;
+
+                do {
+                    diffSaturation = 80 + Math.random() * 20;
+                    diffLightness = 40 + Math.random() * 20;
+                    attempts++;
+
+                    // Force a minimum difference if we've tried too many times
+                    if (attempts >= maxAttempts) {
+                        if (Math.random() > 0.5) {
+                            diffSaturation = baseSaturation + (Math.random() > 0.5 ? MIN_SATURATION_DIFF : -MIN_SATURATION_DIFF);
+                            diffSaturation = Math.max(80, Math.min(100, diffSaturation));
+                        } else {
+                            diffLightness = baseLightness + (Math.random() > 0.5 ? MIN_LIGHTNESS_DIFF : -MIN_LIGHTNESS_DIFF);
+                            diffLightness = Math.max(40, Math.min(60, diffLightness));
+                        }
+                        break;
+                    }
+                } while (
+                    Math.abs(diffSaturation - baseSaturation) < MIN_SATURATION_DIFF &&
+                    Math.abs(diffLightness - baseLightness) < MIN_LIGHTNESS_DIFF
+                );
+
+                // Create squares with larger size and smaller gaps
+                this.squares = [];
+                const squareSize = 120;
+                const gap = 5;
+                const totalWidth = (squareSize * 3) + (gap * 2);
+                const totalHeight = (squareSize * 3) + (gap * 2);
+                const startX = (this.canvas.width - totalWidth) / 2;
+                const startY = (this.canvas.height - totalHeight) / 2;
+
+                const positions = [];
+                // Generate 3x3 grid positions
+                for (let row = 0; row < 3; row++) {
+                    for (let col = 0; col < 3; col++) {
+                        positions.push({
+                            x: startX + col * (squareSize + gap),
+                            y: startY + row * (squareSize + gap)
+                        });
+                    }
+                }
+
+                // Shuffle positions
+                for (let i = positions.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [positions[i], positions[j]] = [positions[j], positions[i]];
+                }
+
+                // Create squares with colors
+                this.correctIndex = Math.floor(Math.random() * 9);
+                
+                for (let i = 0; i < 9; i++) {
+                    const isCorrect = i === this.correctIndex;
+                    const sat = isCorrect ? diffSaturation : baseSaturation;
+                    const light = isCorrect ? diffLightness : baseLightness;
+                    
+                    this.squares.push({
+                        x: positions[i].x,
+                        y: positions[i].y,
+                        width: squareSize,
+                        height: squareSize,
+                        color: this.hslToRgb(hue, sat, light),
+                        scale: 0,
+                        targetScale: 1,
+                        pulseTime: 0
+                    });
+                }
+            }
+
+            handleClick(event) {
+                if (this.gameOver) return;
+
+                const rect = this.canvas.getBoundingClientRect();
+                // Calculate the scale factor between display size and internal canvas size
+                const scaleX = this.canvas.width / rect.width;
+                const scaleY = this.canvas.height / rect.height;
+                
+                const x = (event.clientX - rect.left) * scaleX;
+                const y = (event.clientY - rect.top) * scaleY;
+
+                // Check which square was clicked
+                for (let i = 0; i < this.squares.length; i++) {
+                    const square = this.squares[i];
+                    if (x >= square.x && x <= square.x + square.width &&
+                        y >= square.y && y <= square.y + square.height) {
+                        if (i === this.correctIndex) {
+                            this.handleCorrect(i);
+                        } else {
+                            this.handleWrong();
+                        }
+                        break;
+                    }
+                }
+            }
+
+            handleCorrect(index) {
+                this.score++;
+                this.updateScoreDisplay();
+                
+                // Pulse effect
+                this.squares[index].pulseTime = 30;
+                
+                // Generate new round after animation
+                setTimeout(() => {
+                    this.generateSquares();
+                }, 300);
+            }
+
+            handleWrong() {
+                this.gameOver = true;
+                this.showingCorrect = true;
+                this.correctFlashTime = 120; // 2 seconds at 60fps
+                
+                if (this.score > this.highScore) {
+                    this.highScore = this.score;
+                    this.saveHighScore();
+                }
+
+                setTimeout(() => {
+                    this.showGameOverModal();
+                }, 2000);
+            }
+
+            updateScoreDisplay() {
+                document.getElementById('score').textContent = this.score;
+                document.getElementById('highScore').textContent = this.highScore;
+            }
+
+            showGameOverModal() {
+                document.getElementById('finalScore').textContent = this.score;
+                document.getElementById('modalHighScore').textContent = this.highScore;
+                document.getElementById('gameOverModal').style.display = 'flex';
+            }
+
+            restart() {
+                this.score = 0;
+                this.gameOver = false;
+                this.showingCorrect = false;
+                this.correctFlashTime = 0;
+                this.loadHighScore();
+                this.updateScoreDisplay();
+                this.generateSquares();
+                document.getElementById('gameOverModal').style.display = 'none';
+            }
+
+            draw() {
+                // Clear canvas
+                this.ctx.fillStyle = '#f0f0f5';
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+                // Draw squares
+                for (let i = 0; i < this.squares.length; i++) {
+                    const square = this.squares[i];
+                    
+                    // Update animations
+                    square.scale += (square.targetScale - square.scale) * 0.1;
+                    
+                    if (square.pulseTime > 0) {
+                        square.pulseTime--;
+                    }
+
+                    // Calculate render size
+                    const renderSize = square.width * square.scale;
+                    const offset = (square.width - renderSize) / 2;
+
+                    // Save context state
+                    this.ctx.save();
+
+                    // Apply color
+                    this.ctx.fillStyle = square.color;
+
+                    // Apply pulse effect
+                    if (square.pulseTime > 0) {
+                        const pulseIntensity = square.pulseTime / 30;
+                        this.ctx.globalAlpha = 0.7 + pulseIntensity * 0.3;
+                        this.ctx.shadowBlur = 20 * pulseIntensity;
+                        this.ctx.shadowColor = 'rgba(255, 255, 255, 0.8)';
+                    }
+
+                    // Apply correct square highlight when game over
+                    if (this.showingCorrect && i === this.correctIndex) {
+                        const flash = Math.sin(this.animationFrame * 0.15) * 0.5 + 0.5;
+                        this.ctx.strokeStyle = `rgba(255, 50, 50, ${flash})`;
+                        this.ctx.lineWidth = 4;
+                        this.ctx.strokeRect(
+                            square.x + offset - 2, 
+                            square.y + offset - 2, 
+                            renderSize + 4, 
+                            renderSize + 4
+                        );
+                    }
+
+                    // Draw square
+                    this.ctx.fillRect(
+                        square.x + offset, 
+                        square.y + offset, 
+                        renderSize, 
+                        renderSize
+                    );
+
+                    // Restore context state
+                    this.ctx.restore();
+                }
+            }
+
+            animate() {
+                this.animationFrame++;
+                
+                if (this.correctFlashTime > 0) {
+                    this.correctFlashTime--;
+                }
+
+                this.draw();
+                requestAnimationFrame(() => this.animate());
+            }
+        }
+
+        // Initialize game when page loads
+        window.onload = () => {
+            const canvas = document.getElementById('gameCanvas');
+            window.game = new ColorSquareGame(canvas);
+        };
+    </script>
+</body>
+</html>
