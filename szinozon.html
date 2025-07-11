@@ -40,9 +40,7 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
             max-width: 660px;
             width: 100%;
-            /* Better mobile centering */
             margin: auto;
-            min-height: fit-content;
         }
 
         @media (max-width: 700px) {
@@ -52,13 +50,8 @@
             }
             
             body {
-                /* Better mobile centering with improved flexbox */
                 padding: 10px;
                 padding: max(10px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right)) max(10px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left));
-                align-items: center;
-                justify-content: center;
-                min-height: 100vh;
-                min-height: 100dvh;
             }
         }
 
@@ -78,16 +71,13 @@
             }
             
             body {
-                /* Enhanced mobile centering for smaller screens */
                 padding: 5px;
                 padding: max(5px, env(safe-area-inset-top)) max(5px, env(safe-area-inset-right)) max(5px, env(safe-area-inset-bottom)) max(5px, env(safe-area-inset-left));
             }
             
             .game-container {
-                /* Adjust container for very small screens */
                 padding: 15px;
                 margin: 5px;
-                border-radius: 15px;
             }
         }
 
