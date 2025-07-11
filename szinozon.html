@@ -284,10 +284,10 @@
             }
 
             generateSquares() {
-                // Use pure red #ff0000 as base color
-                const hue = 0; // Pure red
-                const baseSaturation = 100; // Maximum saturation for pure red
-                const baseLightness = 50; // Medium lightness for pure red
+                // Generate random hue for each round (0-360 degrees)
+                const hue = Math.floor(Math.random() * 360); // Random color hue
+                const baseSaturation = 100; // Maximum saturation for vibrant colors
+                const baseLightness = 50; // Medium lightness for good contrast
                 
                 // Minimum difference thresholds for visibility
                 const MIN_LIGHTNESS_DIFF = 15;
