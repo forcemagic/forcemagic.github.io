@@ -20,29 +20,45 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #000000; /* AMOLED pure black */
             min-height: 100vh;
+            min-height: 100dvh; /* Dynamic viewport height for mobile */
             display: flex;
             justify-content: center;
             align-items: center;
             color: white;
             padding: 20px;
+            padding: max(20px, env(safe-area-inset-top)) max(20px, env(safe-area-inset-right)) max(20px, env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left));
         }
 
         .game-container {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05); /* Darker for AMOLED */
             backdrop-filter: blur(10px);
             border-radius: 20px;
             padding: 30px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             max-width: 660px;
             width: 100%;
+            /* Better mobile centering */
+            margin: auto;
+            min-height: fit-content;
         }
 
         @media (max-width: 700px) {
             .game-container {
                 padding: 20px;
+                margin: 10px;
+            }
+            
+            body {
+                /* Better mobile centering with improved flexbox */
+                padding: 10px;
+                padding: max(10px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right)) max(10px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left));
+                align-items: center;
+                justify-content: center;
+                min-height: 100vh;
+                min-height: 100dvh;
             }
         }
 
@@ -59,6 +75,19 @@
         @media (max-width: 500px) {
             .header p {
                 font-size: 1em;
+            }
+            
+            body {
+                /* Enhanced mobile centering for smaller screens */
+                padding: 5px;
+                padding: max(5px, env(safe-area-inset-top)) max(5px, env(safe-area-inset-right)) max(5px, env(safe-area-inset-bottom)) max(5px, env(safe-area-inset-left));
+            }
+            
+            .game-container {
+                /* Adjust container for very small screens */
+                padding: 15px;
+                margin: 5px;
+                border-radius: 15px;
             }
         }
 
@@ -88,11 +117,12 @@
         }
 
         .score-item {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.08); /* Darker for AMOLED */
             padding: 10px 20px;
             border-radius: 10px;
             backdrop-filter: blur(5px);
             white-space: nowrap;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         @media (max-width: 400px) {
@@ -101,13 +131,35 @@
             }
         }
 
+        /* Landscape mobile orientation optimizations */
+        @media (max-height: 500px) and (orientation: landscape) {
+            body {
+                padding: 5px;
+                padding: max(5px, env(safe-area-inset-top)) max(5px, env(safe-area-inset-right)) max(5px, env(safe-area-inset-bottom)) max(5px, env(safe-area-inset-left));
+            }
+            
+            .game-container {
+                padding: 15px;
+                margin: 5px;
+                max-width: 90vw;
+            }
+            
+            .header {
+                margin-bottom: 10px;
+            }
+            
+            .score-container {
+                margin-bottom: 10px;
+            }
+        }
+
         .canvas-wrapper {
             position: relative;
             width: 100%;
             padding-bottom: 66.67%; /* 400/600 = 0.6667 to maintain aspect ratio */
-            background: #f0f0f5;
+            background: #111111; /* Darker for AMOLED theme */
             border-radius: 10px;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
         }
 
         #gameCanvas {
@@ -436,8 +488,8 @@
             }
 
             draw() {
-                // Clear canvas
-                this.ctx.fillStyle = '#f0f0f5';
+                // Clear canvas with dark theme background
+                this.ctx.fillStyle = '#111111';
                 this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
                 // Draw squares
