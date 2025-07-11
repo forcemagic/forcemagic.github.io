@@ -147,7 +147,7 @@
             position: relative;
             width: 100%;
             padding-bottom: 66.67%; /* 400/600 = 0.6667 to maintain aspect ratio */
-            background: #111111; /* Darker for AMOLED theme */
+            background: #1a1a1a; /* Improved dark theme background */
             border-radius: 10px;
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
         }
@@ -321,12 +321,12 @@
 
             generateSquares() {
                 const hue = Math.random() * 360;
-                const baseSaturation = 80 + Math.random() * 20;
-                const baseLightness = 40 + Math.random() * 20;
+                const baseSaturation = 85 + Math.random() * 15; // Increased saturation for better vibrancy
+                const baseLightness = 50 + Math.random() * 15; // Increased lightness for better contrast on dark background
 
                 // Minimum difference thresholds
-                const MIN_SATURATION_DIFF = 5;
-                const MIN_LIGHTNESS_DIFF = 5;
+                const MIN_SATURATION_DIFF = 8; // Increased minimum difference
+                const MIN_LIGHTNESS_DIFF = 8;
 
                 // Generate different square color with minimum difference
                 let diffSaturation, diffLightness;
@@ -334,18 +334,18 @@
                 const maxAttempts = 100;
 
                 do {
-                    diffSaturation = 80 + Math.random() * 20;
-                    diffLightness = 40 + Math.random() * 20;
+                    diffSaturation = 85 + Math.random() * 15;
+                    diffLightness = 50 + Math.random() * 15;
                     attempts++;
 
                     // Force a minimum difference if we've tried too many times
                     if (attempts >= maxAttempts) {
                         if (Math.random() > 0.5) {
                             diffSaturation = baseSaturation + (Math.random() > 0.5 ? MIN_SATURATION_DIFF : -MIN_SATURATION_DIFF);
-                            diffSaturation = Math.max(80, Math.min(100, diffSaturation));
+                            diffSaturation = Math.max(85, Math.min(100, diffSaturation));
                         } else {
                             diffLightness = baseLightness + (Math.random() > 0.5 ? MIN_LIGHTNESS_DIFF : -MIN_LIGHTNESS_DIFF);
-                            diffLightness = Math.max(40, Math.min(60, diffLightness));
+                            diffLightness = Math.max(50, Math.min(65, diffLightness));
                         }
                         break;
                     }
@@ -478,8 +478,8 @@
             }
 
             draw() {
-                // Clear canvas with dark theme background
-                this.ctx.fillStyle = '#111111';
+                // Clear canvas with improved dark theme background
+                this.ctx.fillStyle = '#1a1a1a';
                 this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
                 // Draw squares
@@ -514,7 +514,7 @@
                     // Apply correct square highlight when game over
                     if (this.showingCorrect && i === this.correctIndex) {
                         const flash = Math.sin(this.animationFrame * 0.15) * 0.5 + 0.5;
-                        this.ctx.strokeStyle = `rgba(255, 50, 50, ${flash})`;
+                        this.ctx.strokeStyle = `rgba(255, 75, 75, ${flash})`;
                         this.ctx.lineWidth = 4;
                         this.ctx.strokeRect(
                             square.x + offset - 2, 
