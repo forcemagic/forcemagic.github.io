@@ -287,24 +287,29 @@
                 // Generate random hue for each round (0-360 degrees)
                 const hue = Math.floor(Math.random() * 360); // Random color hue
                 const baseSaturation = 100; // Maximum saturation for vibrant colors
-                const baseLightness = 50; // Medium lightness for good contrast
+                const baseLightness = 55; // Medium lightness for good contrast
                 
-                // Minimum difference thresholds for visibility
-                const MIN_LIGHTNESS_DIFF = 15;
+                // Minimum difference thresholds for visibility - much smaller for increased difficulty
+                const MIN_LIGHTNESS_DIFF = 4;
                 
                 // Generate different square color with lightness variation
                 let diffLightness;
+                let diffSaturation;
                 let attempts = 0;
                 const maxAttempts = 100;
                 
                 do {
-                    diffLightness = 35 + Math.random() * 40; // Range 35-75
+                    // Tighter lightness range for more subtle differences
+                    diffLightness = 45 + Math.random() * 20; // Range 45-65 (was 35-75)
+                    // Add small saturation variations for more subtle differences
+                    diffSaturation = baseSaturation + (Math.random() - 0.5) * 6; // ±3 points
+                    diffSaturation = Math.max(94, Math.min(100, diffSaturation)); // Keep within 94-100 range
                     attempts++;
                     
                     // Force a minimum difference if we've tried too many times
                     if (attempts >= maxAttempts) {
                         diffLightness = baseLightness + (Math.random() > 0.5 ? MIN_LIGHTNESS_DIFF : -MIN_LIGHTNESS_DIFF);
-                        diffLightness = Math.max(35, Math.min(75, diffLightness));
+                        diffLightness = Math.max(45, Math.min(65, diffLightness));
                         break;
                     }
                 } while (Math.abs(diffLightness - baseLightness) < MIN_LIGHTNESS_DIFF);
@@ -340,7 +345,7 @@
                 
                 for (let i = 0; i < 9; i++) {
                     const isCorrect = i === this.correctIndex;
-                    const sat = baseSaturation;
+                    const sat = isCorrect ? diffSaturation : baseSaturation;
                     const light = isCorrect ? diffLightness : baseLightness;
                     
                     this.squares.push({
