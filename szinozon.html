@@ -289,8 +289,11 @@
                 const baseSaturation = 100; // Maximum saturation for vibrant colors
                 const baseLightness = 55; // Medium lightness for good contrast
                 
-                // Minimum difference thresholds for visibility - much smaller for increased difficulty
-                const MIN_LIGHTNESS_DIFF = 4;
+                // Dynamic difficulty scaling: start easy (40), scale down to very hard (8)
+                const maxDiff = 40; // Easy start
+                const minDiff = 8;  // Very hard minimum
+                const difficultyProgress = Math.min(this.score / 100, 1); // Scale over 100 correct answers
+                const MIN_LIGHTNESS_DIFF = Math.max(minDiff, maxDiff - (difficultyProgress * (maxDiff - minDiff)));
                 
                 // Generate different square color with lightness variation
                 let diffLightness;
