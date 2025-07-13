@@ -336,9 +336,10 @@
                 
                 this.currentDifficulty = lightnessDifference;
                 
-                // Fixed base values (minimal randomness)
-                const baseSaturation = 90; // Fixed high saturation for all squares
-                const baseLightness = 50;   // Fixed medium lightness for similar squares
+                // Randomized base values with constraints for visual variety
+                const baseSaturation = Math.floor(Math.random() * 21) + 80; // Random saturation 80-100 (common for all squares)
+                // Base lightness constrained to allow for max adjustment of 15 (25-75 range ensures 10-90 after adjustment)
+                const baseLightness = Math.floor(Math.random() * 51) + 25;   // Random lightness 25-75
                 
                 // Only randomness: direction of lightness difference
                 const lightnessDirection = Math.random() > 0.5 ? 1 : -1;
