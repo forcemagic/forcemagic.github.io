@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hu">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reaction Time Game</title>
+    <title>Reakcióidő Teszt</title>
     <style>
         * {
             margin: 0;
@@ -17,21 +17,24 @@
             height: 100vh;
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-end;
             overflow: hidden;
             user-select: none;
+            padding: 0;
+            margin: 0;
         }
 
         .game-container {
             text-align: center;
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
-            border-radius: 20px;
+            border-radius: 20px 20px 0 0;
             padding: 40px;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.2);
             max-width: 500px;
-            width: 90%;
+            width: 100%;
+            margin: 0;
         }
 
         h1 {
@@ -133,17 +136,25 @@
         }
 
         @media (max-width: 768px) {
+            body {
+                align-items: flex-end;
+                padding: 0;
+            }
+            
             .game-container {
                 padding: 20px;
-                margin: 20px;
+                margin: 0;
+                width: 100%;
+                border-radius: 20px 20px 0 0;
             }
             
             h1 {
                 font-size: 2em;
+                margin-bottom: 20px;
             }
             
             .game-area {
-                height: 250px;
+                height: 200px;
             }
         }
 
@@ -157,7 +168,7 @@
             opacity: 0;
             pointer-events: none;
             z-index: 1000;
-            transition: opacity 0.1s ease;
+            transition: none;
         }
 
         .flash-overlay.active {
@@ -168,19 +179,19 @@
 <body>
     <div class="flash-overlay" id="flashOverlay"></div>
     <div class="game-container">
-        <h1>⚡ Reaction Time Test</h1>
+        <h1>⚡ Reakcióidő Teszt</h1>
         <div class="instruction">
-            Click or tap when the screen flashes white!
+            Kattints vagy érintsd meg, amikor a képernyő fehéren villan!
         </div>
         
         <div class="game-area" id="gameArea">
-            <div class="game-text" id="gameText">Click to Start</div>
+            <div class="game-text" id="gameText">Kattints az indításhoz</div>
         </div>
         
         <div class="result" id="result"></div>
         
-        <button class="btn" id="startBtn" onclick="startGame()">Start Game</button>
-        <button class="btn" id="retryBtn" onclick="startGame()" style="display: none;">Try Again</button>
+        <button class="btn" id="startBtn" onclick="startGame()">Játék indítása</button>
+        <button class="btn" id="retryBtn" onclick="startGame()" style="display: none;">Újra próbálom</button>
         
         <div class="stats" id="stats"></div>
     </div>
@@ -207,17 +218,19 @@
         function startGame() {
             if (gameState === 'waiting') return;
             
-            gameState = 'waiting';
-            gameArea.className = 'game-area waiting';
-            gameText.textContent = 'Wait for white flash...';
-            result.classList.remove('show');
-            startBtn.style.display = 'none';
-            retryBtn.style.display = 'none';
-            
-            // Clear any existing timeout
+            // Clear any existing timeout first
             if (timeout) {
                 clearTimeout(timeout);
             }
+            
+            gameState = 'waiting';
+            
+            // Batch all DOM updates
+            gameArea.className = 'game-area waiting';
+            gameText.textContent = 'Várd a fehér villanást...';
+            result.classList.remove('show');
+            startBtn.style.display = 'none';
+            retryBtn.style.display = 'none';
             
             const delay = getRandomDelay();
             
@@ -229,10 +242,16 @@
         }
 
         function showFlash() {
-            gameState = 'ready';
+            // Batch DOM updates before timing starts
             gameArea.className = 'game-area go';
-            gameText.textContent = 'CLICK NOW!';
+            gameText.textContent = 'KATTINTS MOST!';
             flashOverlay.classList.add('active');
+            
+            // Force layout completion before timing
+            gameArea.offsetHeight;
+            
+            // Set state and start timing after DOM updates
+            gameState = 'ready';
             startTime = performance.now();
             
             // Remove flash after a short time
@@ -246,23 +265,27 @@
                 // Too early
                 clearTimeout(timeout);
                 gameState = 'finished';
+                
+                // Batch DOM updates
                 gameArea.className = 'game-area result';
-                gameText.textContent = 'Too Early!';
-                result.textContent = 'You clicked before the flash! 😅';
+                gameText.textContent = 'Túl korán!';
+                result.textContent = 'A villanás előtt kattintottál! 😅';
                 result.classList.add('show');
                 showRetryButton();
             } else if (gameState === 'ready') {
-                // Good click
+                // Capture timing immediately
                 const reactionTime = Math.round(performance.now() - startTime);
                 gameState = 'finished';
+                
+                // Batch DOM updates after timing calculation
                 gameArea.className = 'game-area result';
-                gameText.textContent = 'Great!';
-                
-                attempts.push(reactionTime);
-                currentAttempt++;
-                
+                gameText.textContent = 'Nagyszerű!';
                 result.textContent = `${reactionTime}ms`;
                 result.classList.add('show');
+                
+                // Update data structures
+                attempts.push(reactionTime);
+                currentAttempt++;
                 
                 updateStats();
                 showRetryButton();
@@ -282,17 +305,26 @@
             const best = Math.min(...attempts);
             
             stats.innerHTML = `
-                Attempt: ${currentAttempt} | 
-                Average: ${avg}ms | 
-                Best: ${best}ms
+                Próbálkozás: ${currentAttempt} | 
+                Átlag: ${avg}ms | 
+                Legjobb: ${best}ms
             `;
         }
 
+        // Unified click handler to avoid race conditions
+        function unifiedClickHandler() {
+            if (gameState === 'idle') {
+                startGame();
+            } else if (gameState === 'waiting' || gameState === 'ready') {
+                handleClick();
+            }
+        }
+
         // Event listeners
-        gameArea.addEventListener('click', handleClick);
+        gameArea.addEventListener('click', unifiedClickHandler);
         gameArea.addEventListener('touchstart', (e) => {
             e.preventDefault();
-            handleClick();
+            unifiedClickHandler();
         });
 
         // Prevent context menu on long press
@@ -304,18 +336,7 @@
         document.addEventListener('keydown', (e) => {
             if (e.code === 'Space' || e.code === 'Enter') {
                 e.preventDefault();
-                if (gameState === 'idle') {
-                    startGame();
-                } else if (gameState === 'waiting' || gameState === 'ready') {
-                    handleClick();
-                }
-            }
-        });
-
-        // Initialize
-        gameArea.addEventListener('click', () => {
-            if (gameState === 'idle') {
-                startGame();
+                unifiedClickHandler();
             }
         });
     </script>
