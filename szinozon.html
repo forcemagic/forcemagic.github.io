@@ -327,59 +327,31 @@
                 
                 // Generate random hue for each round (0-360 degrees)
                 const hue = Math.floor(Math.random() * 360); // Random color hue
-                const baseSaturation = 100; // Maximum saturation for vibrant colors
-                const baseLightness = 55; // Medium lightness for good contrast
                 
-                // Progressive difficulty: constrained ranges that get smaller with higher scores
-                // Start with range 20, decrease exponentially to minimum range of 2
-                const maxRange = 20;
-                const minRange = 2;
-                const rangeReduction = Math.max(minRange, maxRange - Math.floor(this.score / 2)); // Reduce by 1 every 2 points
+                // Predictable difficulty with minimal randomness - LIGHTNESS ONLY
+                // Fractional difficulty that reaches 1 at round 69
+                // Score 0: difference of 15, Score 69: difference of 1
+                const fractionalDifficulty = 15 - (this.score * (14/69)); // 15 -> 1 over 69 levels
+                const lightnessDifference = Math.ceil(Math.max(1, fractionalDifficulty)); // Ceiling for rational values
                 
-                this.currentDifficulty = rangeReduction;
+                this.currentDifficulty = lightnessDifference;
                 
-                // Choose direction for the different square (darker or lighter)
-                const goingDarker = Math.random() > 0.5;
+                // Fixed base values (minimal randomness)
+                const baseSaturation = 90; // Fixed high saturation for all squares
+                const baseLightness = 50;   // Fixed medium lightness for similar squares
                 
-                // Generate similar square colors (base colors for this round)
-                const similarSaturation = Math.floor(Math.random() * rangeReduction) + (100 - rangeReduction);
-                const similarLightness = Math.floor(Math.random() * rangeReduction) + (goingDarker ? 50 : (50 - rangeReduction));
+                // Only randomness: direction of lightness difference
+                const lightnessDirection = Math.random() > 0.5 ? 1 : -1;
                 
-                // Generate different square colors with constraint: AT MOST one identical parameter
-                let diffSaturation, diffLightness;
-                let attempts = 0;
-                const maxAttempts = 50;
+                // ONLY lightness differs, saturation always same
+                const diffLightness = baseLightness + (lightnessDifference * lightnessDirection);
+                const diffSaturation = baseSaturation; // Always same as base
                 
-                do {
-                    if (goingDarker) {
-                        diffLightness = Math.floor(Math.random() * rangeReduction) + (50 - rangeReduction);
-                    } else {
-                        diffLightness = Math.floor(Math.random() * rangeReduction) + 50;
-                    }
-                    diffSaturation = Math.floor(Math.random() * rangeReduction) + (100 - rangeReduction);
-                    attempts++;
-                    
-                    // Ensure AT MOST one parameter is identical (not both)
-                    const lightnessIdentical = diffLightness === similarLightness;
-                    const saturationIdentical = diffSaturation === similarSaturation;
-                    
-                    // Break if exactly one is identical OR both are different
-                    if (!(lightnessIdentical && saturationIdentical)) {
-                        break;
-                    }
-                    
-                    // Force difference if we've tried too many times
-                    if (attempts >= maxAttempts) {
-                        if (Math.random() > 0.5) {
-                            // Make lightness different
-                            diffLightness = similarLightness + (diffLightness > similarLightness ? 1 : -1);
-                        } else {
-                            // Make saturation different  
-                            diffSaturation = similarSaturation + (diffSaturation > similarSaturation ? 1 : -1);
-                        }
-                        break;
-                    }
-                } while (true);
+                // Clamp lightness to valid range
+                const clampedDiffLightness = Math.max(10, Math.min(90, diffLightness));
+                
+                const similarLightness = baseLightness;
+                const similarSaturation = baseSaturation;
                 
                 // Create squares with larger size and smaller gaps
                 this.squares = [];
@@ -413,7 +385,7 @@
                 for (let i = 0; i < 9; i++) {
                     const isCorrect = i === this.correctIndex;
                     const sat = isCorrect ? diffSaturation : similarSaturation;
-                    const light = isCorrect ? diffLightness : similarLightness;
+                    const light = isCorrect ? clampedDiffLightness : similarLightness;
                     
                     this.squares.push({
                         x: positions[i].x,
