@@ -29,7 +29,8 @@
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
+            min-height: 100dvh; /* Dynamic viewport height - excludes browser UI */
+            min-height: 100vh; /* Fallback for browsers without dvh support */
             display: flex;
             justify-content: center;
             align-items: center;
@@ -157,7 +158,8 @@
                 padding: 20px;
                 margin: 0;
                 width: 100%;
-                height: 100vh;
+                height: 100dvh; /* Dynamic viewport height - excludes browser UI */
+                height: 100vh; /* Fallback for browsers without dvh support */
                 border-radius: 0;
                 display: flex;
                 flex-direction: column;
