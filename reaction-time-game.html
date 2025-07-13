@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reaction Time Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        .game-container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            max-width: 500px;
+            width: 90%;
+        }
+
+        h1 {
+            color: white;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            font-weight: 300;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .instruction {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.2em;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .game-area {
+            width: 100%;
+            height: 300px;
+            border-radius: 15px;
+            background: #2c3e50;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 30px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .game-area.waiting {
+            background: #e74c3c;
+        }
+
+        .game-area.ready {
+            background: #f39c12;
+        }
+
+        .game-area.go {
+            background: #ffffff;
+        }
+
+        .game-area.result {
+            background: #27ae60;
+        }
+
+        .game-text {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: white;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .game-area.go .game-text {
+            color: #333;
+        }
+
+        .result {
+            color: white;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+        }
+
+        .result.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            margin: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .stats {
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 20px;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 768px) {
+            .game-container {
+                padding: 20px;
+                margin: 20px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            .game-area {
+                height: 250px;
+            }
+        }
+
+        .flash-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 1000;
+            transition: opacity 0.1s ease;
+        }
+
+        .flash-overlay.active {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="flash-overlay" id="flashOverlay"></div>
+    <div class="game-container">
+        <h1>⚡ Reaction Time Test</h1>
+        <div class="instruction">
+            Click or tap when the screen flashes white!
+        </div>
+        
+        <div class="game-area" id="gameArea">
+            <div class="game-text" id="gameText">Click to Start</div>
+        </div>
+        
+        <div class="result" id="result"></div>
+        
+        <button class="btn" id="startBtn" onclick="startGame()">Start Game</button>
+        <button class="btn" id="retryBtn" onclick="startGame()" style="display: none;">Try Again</button>
+        
+        <div class="stats" id="stats"></div>
+    </div>
+
+    <script>
+        let startTime;
+        let timeout;
+        let gameState = 'idle'; // idle, waiting, ready, finished
+        let attempts = [];
+        let currentAttempt = 0;
+
+        const gameArea = document.getElementById('gameArea');
+        const gameText = document.getElementById('gameText');
+        const result = document.getElementById('result');
+        const startBtn = document.getElementById('startBtn');
+        const retryBtn = document.getElementById('retryBtn');
+        const stats = document.getElementById('stats');
+        const flashOverlay = document.getElementById('flashOverlay');
+
+        function getRandomDelay() {
+            return Math.random() * 3000 + 2000; // 2-5 seconds
+        }
+
+        function startGame() {
+            if (gameState === 'waiting') return;
+            
+            gameState = 'waiting';
+            gameArea.className = 'game-area waiting';
+            gameText.textContent = 'Wait for white flash...';
+            result.classList.remove('show');
+            startBtn.style.display = 'none';
+            retryBtn.style.display = 'none';
+            
+            // Clear any existing timeout
+            if (timeout) {
+                clearTimeout(timeout);
+            }
+            
+            const delay = getRandomDelay();
+            
+            timeout = setTimeout(() => {
+                if (gameState === 'waiting') {
+                    showFlash();
+                }
+            }, delay);
+        }
+
+        function showFlash() {
+            gameState = 'ready';
+            gameArea.className = 'game-area go';
+            gameText.textContent = 'CLICK NOW!';
+            flashOverlay.classList.add('active');
+            startTime = performance.now();
+            
+            // Remove flash after a short time
+            setTimeout(() => {
+                flashOverlay.classList.remove('active');
+            }, 100);
+        }
+
+        function handleClick() {
+            if (gameState === 'waiting') {
+                // Too early
+                clearTimeout(timeout);
+                gameState = 'finished';
+                gameArea.className = 'game-area result';
+                gameText.textContent = 'Too Early!';
+                result.textContent = 'You clicked before the flash! 😅';
+                result.classList.add('show');
+                showRetryButton();
+            } else if (gameState === 'ready') {
+                // Good click
+                const reactionTime = Math.round(performance.now() - startTime);
+                gameState = 'finished';
+                gameArea.className = 'game-area result';
+                gameText.textContent = 'Great!';
+                
+                attempts.push(reactionTime);
+                currentAttempt++;
+                
+                result.textContent = `${reactionTime}ms`;
+                result.classList.add('show');
+                
+                updateStats();
+                showRetryButton();
+            }
+        }
+
+        function showRetryButton() {
+            setTimeout(() => {
+                retryBtn.style.display = 'inline-block';
+            }, 500);
+        }
+
+        function updateStats() {
+            if (attempts.length === 0) return;
+            
+            const avg = Math.round(attempts.reduce((a, b) => a + b, 0) / attempts.length);
+            const best = Math.min(...attempts);
+            
+            stats.innerHTML = `
+                Attempt: ${currentAttempt} | 
+                Average: ${avg}ms | 
+                Best: ${best}ms
+            `;
+        }
+
+        // Event listeners
+        gameArea.addEventListener('click', handleClick);
+        gameArea.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            handleClick();
+        });
+
+        // Prevent context menu on long press
+        gameArea.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+        });
+
+        // Keyboard support
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space' || e.code === 'Enter') {
+                e.preventDefault();
+                if (gameState === 'idle') {
+                    startGame();
+                } else if (gameState === 'waiting' || gameState === 'ready') {
+                    handleClick();
+                }
+            }
+        });
+
+        // Initialize
+        gameArea.addEventListener('click', () => {
+            if (gameState === 'idle') {
+                startGame();
+            }
+        });
+    </script>
+</body>
+</html>
