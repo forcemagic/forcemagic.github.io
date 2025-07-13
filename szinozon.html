@@ -31,6 +31,14 @@
             overflow: hidden;
         }
 
+        @media (max-width: 700px) {
+            body {
+                padding: 10px;
+                align-items: flex-start;
+                padding-top: 20px;
+            }
+        }
+
         .game-container {
             background: rgba(0, 0, 0, 0.7);
             backdrop-filter: blur(10px);
@@ -47,6 +55,7 @@
         @media (max-width: 700px) {
             .game-container {
                 padding: 20px;
+                max-height: calc(100vh - 40px);
             }
         }
 
@@ -321,9 +330,9 @@
                 const baseSaturation = 100; // Maximum saturation for vibrant colors
                 const baseLightness = 55; // Medium lightness for good contrast
                 
-                // Dynamic difficulty scaling: start very easy (80), scale down to very hard (8)
+                // Dynamic difficulty scaling: start very easy (80), scale down to very hard (4)
                 const maxDiff = 80; // Very easy start
-                const minDiff = 8;  // Very hard minimum
+                const minDiff = 4;  // Very hard minimum
                 const difficultyProgress = Math.min(this.score / 100, 1); // Scale over 100 correct answers
                 const baseDifficulty = Math.max(minDiff, maxDiff - (difficultyProgress * (maxDiff - minDiff)));
                 
